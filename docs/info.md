@@ -9,12 +9,13 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+This is basically a 12 hour clock with an AM/PM indicator. This works by incrementing in seconds and checking when to turn over the hour.
 
 ## How to test
 
-Explain how to use your project
+To test, you have to have a clock signal, reset signal, and ena signal going in where ena is pulsing every second. 
 
 ## External hardware
 
 List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+There isn't any notable external hardware unless you want to connect it to an LED display to see the time/output.
