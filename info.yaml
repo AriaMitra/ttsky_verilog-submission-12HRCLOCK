@@ -41,7 +41,7 @@ pinout:
   uo[4]: "Hour"
   uo[5]: "Hour"
   uo[6]: "Hour"
-  uo[7]: "Hour"
+  uo[7]: "AM/PM"
 
   # Bidirectional pins
   uio[0]: "Minute"
@@ -51,7 +51,7 @@ pinout:
   uio[4]: "Minute"
   uio[5]: "Minute"
   uio[6]: "Minute"
-  uio[7]: "AM/PM and Minute"
+  uio[7]: "Minute"
 
 # Do not change!
 yaml_version: 6
