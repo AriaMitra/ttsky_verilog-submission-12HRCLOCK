@@ -17,11 +17,11 @@ module tt_um_AriaMitraClock (
 );
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+
+    assign uio_oe [6:0]  = 0;
+    clock v1(.clk(ui_in[7]), .reset(ui_in[6]),.ena(ui_in[5]),.pm(uio_oe[7]), .hh(uo_out), .mm(uio_out)); 
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    wire _unused = &{ena, clk, rst_n, ui_in[4:0], 1'b0};
 
 endmodule
