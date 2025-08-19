@@ -3,7 +3,7 @@ module clock(
     input reset,
     input ena,
     output reg pm,
-    output reg [7:0] hh,
+    output reg [6:0] hh,
     output reg [7:0] mm
    ); 
     reg [7:0] ss;
@@ -32,7 +32,7 @@ module clock(
                             end else begin
                                 if (hh[3:0] == 4'd9) begin
                                     hh[3:0] <= 4'd0;
-                                    hh[7:4] <= hh[7:4] + 4'd1;
+                                    hh[6:4] <= hh[6:4] + 4'd1;
                                 end else begin
                                     hh[3:0] <= hh[3:0] + 4'd1;
                                 end
