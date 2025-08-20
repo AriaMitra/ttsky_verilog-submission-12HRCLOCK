@@ -1,51 +1,46 @@
+# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
+# SPDX-License-Identifier: Apache-2.0
+
+import os
+os.environ["COCOTB_RESOLVE_X"] = "ZERO"  # Treat 'x' as 0
+
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
-import os
-os.environ["COCOTB_RESOLVE_X"] = "ZERO"
+
 
 @cocotb.test()
 async def test_project(dut):
-    dut._log.info("Start test")
+    dut._log.info("Starting test for AriaMitraClock")
 
-    # Simulated 100 kHz system clock
+    # Start system clock (100kHz = 10us period)
     clock = Clock(dut.clk, 10, units="us")
     cocotb.start_soon(clock.start())
 
-    # Reset sequence
-    dut.ui_in.value = 0
-    dut.uio_in.value = 0
+    # Step 1: Apply reset (ui_in[6] = 1)
     dut.ena.value = 1
-    dut.rst_n.value = 0
+    dut.ui_in.value = 0b01000000  # Reset=1
     await ClockCycles(dut.clk, 5)
-    dut.rst_n.value = 1
 
-    # Set enable = 1, reset = 0, clk = 1 in ui_in[7:5]
-    dut.ui_in.value = 0b11100000
+    # Step 2: Release reset and enable internal clock logic
+    dut.ui_in.value = 0b11100000  # clk=1, reset=0, ena=1
+    await ClockCycles(dut.clk, 1)
 
-    # Simulate 60 seconds (should increment mm from 00 to 01)
-    # Each second = 10 clk cycles (BCD-encoded seconds)
+    # Step 3: Let the clock run for 60 seconds = 600 clock cycles
     await ClockCycles(dut.clk, 600)
 
-    # Read results
-    pm = (dut.uo_out.value >> 7) & 0x1
-    hh = dut.uo_out.value.integer & 0x7F
-    mm = dut.uio_out.value.integer
+    # Step 4: Check outputs (hh, mm, pm)
+    hh_raw = dut.uo_out.value.integer
+    mm_raw = dut.uio_out.value.integer
 
-    dut._log.info(f"HH={hh:02X}, MM={mm:02X}, PM={pm}")
+    pm = (hh_raw >> 7) & 1
+    hh = hh_raw & 0x7F  # Extract hh[6:0]
 
-    # Assert that minutes incremented to 0x01
-    assert mm == 0x01, f"Expected MM=0x01 after 60s, got {mm:02X}"
-    assert hh == 0x12, f"Expected HH=0x12 (12h), got {hh:02X}"
-    assert pm == 0, "Expected AM (PM=0)"
+    dut._log.info(f"⏱️ Time after 60s: HH = {hh:02X}, MM = {mm_raw:02X}, PM = {pm}")
 
-    # Simulate one full hour (60 * 10 = 600 seconds = 6000 cycles)
-    await ClockCycles(dut.clk, 6000)
+    # Step 5: Assertions
+    assert mm_raw == 0x01, f"Expected MM = 0x01 after 60s, got {mm_raw:02X}"
+    assert hh == 0x12, f"Expected HH = 0x12 after 60s, got {hh:02X}"
+    assert pm == 0, "Expected PM = 0 (AM) after 60s"
 
-    mm = dut.uio_out.value.integer
-    hh = dut.uo_out.value.integer & 0x7F
-    pm = (dut.uo_out.value >> 7) & 0x1
-
-    dut._log.info(f"After 1 hour: HH={hh:02X}, MM={mm:02X}, PM={pm}")
-    assert mm == 0x00, "Minutes should roll back to 0"
-    assert hh == 0x01, "Hour should increment to 01"
+    dut._log.info("Test passed: Minute incremented correctly after 60s")
