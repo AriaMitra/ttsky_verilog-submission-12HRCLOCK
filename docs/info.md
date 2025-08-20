@@ -13,7 +13,7 @@ This is basically a 12 hour clock with an AM/PM indicator. This works by increme
 
 ## How to test
 
-To test, you have to have a clock signal, reset signal, and ena signal going in where ena is pulsing every second. 
+To test, you have to have a clock signal, reset signal, and ena signal going in where ena is pulsing every second. These signals are ui_in[7:5].
 
 ## External hardware
 
