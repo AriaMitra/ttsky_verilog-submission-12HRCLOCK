@@ -9,11 +9,11 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-This is basically a 12 hour clock with an AM/PM indicator. This works by incrementing in seconds and checking when to turn over the hour.
+This is basically a 12 hour clock with an AM/PM indicator. This works by incrementing in seconds and checking when to turn over the minute/hour.
 
 ## How to test
 
-To test, you have to have a clock signal, reset signal, and ena signal going in where ena is pulsing every second. These signals are ui_in[7:5].
+To test, you have to have a clock signal, reset signal, and ena signal going in where ena is pulsing every second. These signals are ui_in[7:5] so they are manually going in so that there is more flexibility.
 
 ## External hardware
 
