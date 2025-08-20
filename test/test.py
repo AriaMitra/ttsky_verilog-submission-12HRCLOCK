@@ -1,7 +1,8 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
-
+import os
+os.environ["COCOTB_RESOLVE_X"] = "ZERO"
 
 @cocotb.test()
 async def test_project(dut):
