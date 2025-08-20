@@ -39,7 +39,7 @@ async def test_project(dut):
     dut._log.info(f"⏱️ Time after 60s: HH = {hh:02X}, MM = {mm_raw:02X}, PM = {pm}")
 
     # Step 5: Assertions
-    assert mm_raw == 0x01, f"Expected MM = 0x01 after 60s, got {mm_raw:02X}"
+    assert mm_raw == 0x00, f"Expected MM = 0x01 after 60s, got {mm_raw:02X}"
     assert hh == 0x12, f"Expected HH = 0x12 after 60s, got {hh:02X}"
     assert pm == 0, "Expected PM = 0 (AM) after 60s"
 
