@@ -10,31 +10,45 @@ from cocotb.triggers import ClockCycles
 async def test_project(dut):
     dut._log.info("Start")
 
-    # Set the clock period to 10 us (100 KHz)
+    # Create a 100 kHz clock on dut.clk (10us period)
     clock = Clock(dut.clk, 10, units="us")
     cocotb.start_soon(clock.start())
 
-    # Reset
-    dut._log.info("Reset")
-    dut.ena.value = 1
+    # Initial values
     dut.ui_in.value = 0
     dut.uio_in.value = 0
+    dut.ena.value = 1
     dut.rst_n.value = 0
-    await ClockCycles(dut.clk, 10)
+
+    # Apply reset
+    await ClockCycles(dut.clk, 5)
     dut.rst_n.value = 1
 
-    dut._log.info("Test project behavior")
+    # Enable the design (set ena and clk from ui_in)
+    dut.ui_in.value = 0b11100000  # ui_in[7] = clk, [6] = reset, [5] = ena
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+    # Wait a few cycles to let time pass
+    await ClockCycles(dut.clk, 6000)  # simulate 6000 cycles = 1 minute
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
+    # Read outputs
+    pm_bit = dut.uo_out.value.integer >> 7
+    hh_bcd = dut.uo_out.value.integer & 0x7F
+    mm_bcd = dut.uio_out.value.integer
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    #assert dut.uo_out.value == 50
+    dut._log.info(f"Time: HH={hh_bcd:02X} MM={mm_bcd:02X} PM={pm_bit}")
 
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+    # Example assertion: expect time to have incremented from 12:00:00 to 12:01:00
+    assert mm_bcd >= 0x01, "Minutes should have incremented"
+    assert hh_bcd == 0x12, "Hour should still be 12"
+    assert pm_bit == 0, "Should still be AM"
+
+    # Optional: Wait more time and check PM transition
+    await ClockCycles(dut.clk, 3600 * 12 * 10)  # Simulate 12 hours (~432,000 cycles)
+
+    pm_bit = dut.uo_out.value.integer >> 7
+    hh_bcd = dut.uo_out.value.integer & 0x7F
+    mm_bcd = dut.uio_out.value.integer
+
+    dut._log.info(f"After 12 hours: HH={hh_bcd:02X} MM={mm_bcd:02X} PM={pm_bit}")
+    assert pm_bit == 1, "Should be PM after 12 hours"
+
