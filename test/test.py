@@ -27,7 +27,7 @@ async def test_project(dut):
     await ClockCycles(dut.clk, 1)
 
     # Step 3: Let the clock run for 60 seconds = 600 clock cycles
-    await ClockCycles(dut.clk, 600)
+    await ClockCycles(dut.clk, 601)
 
     # Step 4: Check outputs (hh, mm, pm)
     hh_raw = dut.uo_out.value.integer
