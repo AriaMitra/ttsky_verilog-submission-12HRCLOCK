@@ -9,7 +9,7 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-This is basically a 12 hour clock with an AM/PM indicator. This works by incrementing in seconds (which is not an output) and checking when to turn over the minute/hour.
+This is basically a 12 hour clock (that displays minutes and hours) with an AM/PM indicator. This works by incrementing in seconds (which is not an output) and checking when to turn over the minute/hour.
 
 ## How to test
 
